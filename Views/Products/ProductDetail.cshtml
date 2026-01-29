@@ -1,0 +1,305 @@
+﻿@model Website.Models.Products
+
+@{
+	Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+
+@using Website.Models
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+    //lấy tên danh mục sản phẩm
+    public string GetCategoryName(int _ProductId)
+    {
+        var record = (from category in db.Categories join category_product in db.categoriesProducts on category.Id equals category_product.CategoryId join product in db.Products on category_product.ProductId equals product.Id where product.Id == _ProductId select category).FirstOrDefault();
+        return record != null ? record.Name : "";
+    }
+    //đánh giá số sao
+    public string GetStar(int _ProductId, int _Star)
+    {
+        List<Rating> records = db.Ratings.Where(item => item.ProductId == _ProductId && item.Star == _Star).ToList();
+        return records.Count().ToString();
+    }
+}
+<div class="row">
+    <div class="col-lg-6 mb-5 ftco-animate">
+        <a  class="image-popup"><img src="~/Upload/Products/@Model.Photo" class="img-fluid" alt="Colorlib Template"></a>
+    </div>
+    <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+        <h3>@Model.Name</h3>
+        <div class="rating d-flex">
+            <p class="text-left mr-4">
+                <a href="#"><span class="ion-ios-star-outline">@GetStar(Model.Id, 1) vote</span></a>
+                <a href="#"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline">@GetStar(Model.Id, 2) vote</span></a>
+                <a href="#"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline">@GetStar(Model.Id, 3) vote</span></a>
+                <a href="#"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline">@GetStar(Model.Id, 4) vote</span></a>
+                <a href="#"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline"><span class="ion-ios-star-outline">@GetStar(Model.Id, 5) vote</span></a>
+            </p>
+
+            @{
+                int star1 = int.Parse(GetStar(Model.Id, 1));
+                int star2 = int.Parse(GetStar(Model.Id, 2));
+                int star3 = int.Parse(GetStar(Model.Id, 3));
+                int star4 = int.Parse(GetStar(Model.Id, 4));
+                int star5 = int.Parse(GetStar(Model.Id, 5));
+
+                int totalVote = star1 + star2 + star3 + star4 + star5;
+            }
+            <p> Vote: @totalVote</p>
+            @* <p class="text-left mr-4">
+                <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
+            </p>
+            <p class="text-left">
+                <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
+            </p> *@
+        </div>
+        <p class="price"><span class="mr-2 price-dc">@string.Format("{0:N0} ₫", @Model.Price)</span><span class="price-sale">@string.Format("{0:N0} ₫", @Model.Price - @Model.Discount)</span></p>
+        @* <div class="Action">
+            <a href="/Cart/Buy/@Model.Id" class="btn-action add_To_Cart">
+                Add to Cart
+            </a>
+            <a href="/Products/ProductBuy/@Model.Id" class="btn-action buy-now">
+                Mua Ngay
+            </a>
+        </div> *@
+        @*  <div class="Action">
+            <form method="post" action="/Cart/Buy" class="d-flex gap-3">
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <select name="sizeId" required>
+                    @foreach (var size in ViewBag.Size as List<Size>)
+                    {
+                        <option value="@size.Id">@size.Name</option>
+                    }
+                </select>
+
+                <select name="colorId" required>
+                    @foreach (var color in ViewBag.Color as List<Color>)
+                    {
+                        <option value="@color.Id">@color.Name</option>
+                    }
+                </select>
+
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+
+            <form method="get" action="/Products/ProductBuy/@Model.Id">
+                <input type="hidden" name="ProductId" value="@Model.Id" />
+
+                <select name="SizeId" required>
+                    @foreach (var size in ViewBag.Size as List<Size>)
+                    {
+                        <option value="@size.Id">@size.Name</option>
+                    }
+                </select>
+
+                <select name="ColorId" required>
+                    @foreach (var color in ViewBag.Color as List<Color>)
+                    {
+                        <option value="@color.Id">@color.Name</option>
+                    }
+                </select>
+
+                <button type="submit">Mua ngay</button>
+            </form>
+
+        </div>   *@
+         <div class="Action">
+            
+
+            <form method="post" action="/Products/ProductBuy/@Model.Id">
+                <input type="hidden" name="ProductId" value="@Model.Id" />
+                <div class="color-size">
+                    <select name="SizeId" required>
+                        @foreach (var size in ViewBag.Size as List<Size>)
+                        {
+                            <option value="@size.Id">@size.Name</option>
+                        }
+                    </select>
+
+                    <select name="ColorId" required>
+                        @foreach (var color in ViewBag.Color as List<Color>)
+                        {
+                            <option value="@color.Id">@color.Name</option>
+                        }
+                    </select>
+
+                </div>
+                <div class="AddCart_MuaNgay">
+                    <button type="submit" formaction="/Cart/BuyCart" class="AddCart">Add to Cart</button>
+                    <button type="submit" class="BuyNow">Mua ngay</button>
+                    
+                </div>
+                
+            </form>
+
+        </div>  
+
+
+</div>
+
+<style>
+    span.mr-2.price-dc {
+        text-decoration: line-through;
+    }
+
+    p.text-left.mr-4 {
+        display: flex;
+        flex-direction: column;
+            justify-content: center;
+    }
+
+    span.ion-ios-star-outline {
+        margin-right: 8px;
+        /* font-size: 16px; */
+        color: #f5c518;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .img-fluid {
+        width: 100%;
+        height: 500px;
+    }
+
+        /* ===== KHUNG ACTION ===== */
+        .Action {
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ===== SIZE + COLOR ===== */
+        .color-size {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+            .color-size select {
+                padding: 10px 14px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                font-size: 14px;
+                cursor: pointer;
+                outline: none;
+            }
+
+                .color-size select:focus {
+                    border-color: #c62828;
+                }
+
+        /* ===== KHU VỰC NÚT ===== */
+        .AddCart_MuaNgay {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+            /* ===== NÚT MUA NGAY ===== */
+            .AddCart_MuaNgay button:first-child {
+                background: #c62828;
+                color: #fff;
+                border: none;
+                padding: 14px 26px;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.25s ease;
+            }
+
+                .AddCart_MuaNgay button:first-child:hover {
+                    background: #b71c1c;
+                }
+
+            /* ===== NÚT ADD TO CART ===== */
+            .AddCart_MuaNgay button:last-child {
+                background: #fff;
+                color: #c62828;
+                border: 2px solid #c62828;
+                padding: 14px 26px;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.25s ease;
+            }
+
+                .AddCart_MuaNgay button:last-child:hover {
+                    background: #c62828;
+                    color: #fff;
+                }
+
+        /* ===== RESPONSIVE ===== */
+        @@media (max-width: 768px) {
+            .AddCart_MuaNgay
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .AddCart_MuaNgay button {
+            width: 100%;
+        }
+
+        }
+
+        .AddCart_MuaNgay > .AddCart {
+            background: #c62828 !important;
+            color: #fff;
+            /* border: none; */
+            /* padding: 14px 26px; */
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            line-height: 10px;
+        }
+
+        .AddCart_MuaNgay > .BuyNow {
+            background: #c62828 !important;
+            color: #fff !important;
+            /* border: none; */
+            /* padding: 14px 26px; */
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            line-height: 10px;
+        }
+
+        .pagination {
+            margin: 15px 0 0;
+            display: flex;
+        }
+
+            .pagination .active span {
+                background: #4f46e5;
+                color: #fff;
+                border-color: #4f46e5;
+            }
+
+            .pagination li a, .pagination li span {
+                padding: 6px 12px;
+                margin: 0 3px;
+                border-radius: 5px;
+                border: 1px solid #e5e7eb;
+                color: #4f46e5;
+                font-size: 14px;
+            }
+    </style>
+
+
+
+
+
+
+
+  
+

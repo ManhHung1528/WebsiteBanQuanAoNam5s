@@ -1,0 +1,178 @@
+﻿@using Website.Models
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+    // Liệt kê danh mục cấp cha
+    public List<RowCategory> GetCategories()
+    {
+        List<RowCategory> rows = db.Categories.Where(item => item.ParentId == 0)
+        .OrderByDescending(item => item.Id).ToList();
+        return rows != null ? rows : new List<RowCategory>();
+    }
+    // Liệt kê danh mục cấp con
+    public List<RowCategory> GetSubCategories(int CategoryId)
+    {
+        List<RowCategory> rows = db.Categories.Where(item => item.ParentId == CategoryId)
+        .OrderByDescending(item => item.Id).ToList();
+        return rows != null ? rows : new List<RowCategory>();
+    }
+}
+
+<div class="py-1">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <!-- BÊN TRÁI -->
+            <div class="col-md-6 d-flex align-items-center">
+                <div class="icon mr-2 d-flex justify-content-center align-items-center"><span></span></div>
+                <span class="text">BST Thu Đông 2025 Giá Trải Nghiệm</span>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                        @if (!String.IsNullOrEmpty(Context.Session.GetString("customer_user_email")))
+                        {
+                            <div class="Login_successfully"> <a href="/Account/Login">Xin chào @Context.Session.GetString("customer_user_email")</a>&nbsp; &nbsp;<a href="/Account/Logout">Đăng xuất</a> </div>
+                        }
+
+                        else
+                        {
+
+                    <div class="col-xs-12 col-sm-6 col-md-6 customer"> <a class="Login" href="/Account/Login">Đăng nhập</a>&nbsp; &nbsp;<a class="Register" href="/Account/Register">Đăng ký</a> </div>
+                        }              
+                </div>
+          
+
+        </div>
+    </div>
+</div>
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+        <img class="logo"src="~/images/logo.jpg"/></img>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto align-items-center">
+
+    <li class="nav-item active">
+        <a href="/Home" class="nav-link">Home</a>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle"
+           href="#"
+           id="dropdown04"
+           data-toggle="dropdown">
+            Shop
+        </a>
+
+        <div class="dropdown-menu">
+            <ul class="list-unstyled mb-0">
+                @{
+                    var rows = GetCategories();
+                }
+                @foreach (var row in rows)
+                {
+                    <li>
+                        <a class="dropdown-item" href="/Products/Category/@row.Id">
+                            @row.Name
+                        </a>
+                    </li>
+
+                    var subs = GetSubCategories(row.Id);
+                    foreach (var sub in subs)
+                    {
+                        <li>
+                            <a class="dropdown-item pl-4"
+                               href="/Products/Category/@sub.Id">
+                                @sub.Name
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        </li>
+
+        <li class="nav-item">
+            <a href="/News" class="nav-link">Tin Tức</a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Contact" class="nav-link">Liên hệ</a>
+        </li>
+
+        <!-- SEARCH -->
+        <li class="nav-item">
+                <input type="text"
+                       id="key"
+                       class="input-control"
+                       placeholder="Tìm kiếm...">
+                <button class="btn btn-sm btn-outline-secondary" type="submit" >
+                    <i class="fa fa-search" onclick="return search();"></i>
+                </button>
+                 <script>
+                      function search()
+                      {
+                          // Di chuyển đến trang tìm kiếm
+                          location.href = '/Search/SearchName?key='+document.getElementById("key").value;
+                       }
+                  </script>
+        </li>
+
+        <!-- CART -->
+        <li class="nav-item cart-hover">
+            <a href="/Cart" class="nav-link">
+                <i class="fa fa-shopping-cart mr-1"></i>
+                @Cart.CartQuantity(Context.Session)
+            </a>
+            <div class="mini-cart">
+                @Html.Partial("~/Views/_Shared/_MiniCart.cshtml")
+            </div>
+        </li>
+    @* <li class="nav-item header-cart">
+            <a href="/Cart" class="nav-link cart-icon">
+                <i class="fa fa-shopping-cart mr-1"></i>
+                <span class="cart-count">
+                    @Cart.CartQuantity(Context.Session)
+                </span>
+            </a>
+
+            <!-- MINICART -->
+            <div class="mini-cart">
+                @Html.Partial("~/Views/_Shared/_MiniCart.cshtml")
+            </div>
+        </li>    *@
+
+            </div>
+        </div>
+    </nav>
+<style>   
+    .Register {
+        color:white;
+    }
+    .Login {
+        color: white;
+    }
+
+    /* a.nav-link {
+        display:flex;
+        align-items:center;
+    } */
+    .navbar-nav .nav-item {
+    margin-left: 10px;
+}
+
+    .navbar-nav .nav-link {
+        padding: 8px 12px;
+    }
+
+    .dropdown-menu {
+        min-width: 220px;
+    }
+    .Login_successfully a {
+        color:white;
+    }
+</style>

@@ -1,0 +1,162 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/_Shared/_Layout.cshtml";
+}
+
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Products>
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+
+    public List<RowCategory> GetCategories(int productId)
+    {
+      return (
+         from cp in db.categoriesProducts
+         join c in db.Categories
+             on cp.CategoryId equals c.Id
+         where cp.ProductId == productId
+         select c
+     ).ToList(); ;
+    }
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="col-md-12">
+
+    <div style="margin-bottom:10px;">
+        <a href="/Admin/Products/Create" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Add Products
+        </a>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">List Products</div>
+        <div class="panel-body">
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:110px; text-align:center;">Image</th>
+                        <th style="width:180px; text-align:center;">Title</th>
+                        <th style="width:100px;">Category</th>
+                        <th style="width:80px; text-align:center;">Hot Products</th>
+                        <th style="width:120px; text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model)
+                    {
+                        <tr>
+                            <!-- IMAGE -->
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(row.Photo))
+                                {
+                                    <img src="~/Upload/Products/@row.Photo"
+                                         style="width:80px; border:1px solid #ddd; padding:3px;" />
+                                }
+                            </td>
+
+                            <!-- TITLE -->
+                            <td>@row.Name</td>
+
+                            <!-- CATEGORY -->
+                            <td>
+                                @{
+                                    var categories = GetCategories(row.Id);
+                                }
+
+                                @if (categories.Any())
+                                {
+                                    foreach (var item in categories)
+                                    {
+                                        <span class="label label-info" style="margin-right:4px;">
+                                            @item.Name
+                                        </span>
+                                    }
+                                } else
+                                {
+                                    <p>Không lấy được</p>
+                                }
+                            </td>
+
+                            <!-- HOT -->
+                            <td class="text-center">
+                                @if (row.Hot == 1)
+                                {
+                                    
+                                    <i class="fa fa-check" title="Hot product"></i>
+                                }
+                            </td>
+
+                            <!-- ACTION -->
+                            <td class="text-center">
+                                <a href="/Admin/Products/Update/@row.Id">  <i class="fa-solid fa-pen-to-square"></i>Edit</a>
+                                &nbsp;&nbsp;
+                                <a class="delete" href="/Admin/Products/Delete/@row.Id"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xoá Product?'); " >
+                                    <i class="fa-solid fa-trash-can"> </i>Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <style>
+                .pagination {
+                    margin: 0;
+                    padding: 0;
+                }
+            </style>
+
+            @Html.PagedListPager(
+            Model,
+            page => Url.Action("Read", new { page = page })
+                        )
+
+        </div>
+    </div>
+
+</div>
+<style>
+    .delete {
+        color: red
+    }
+
+    /* Căn giữa chiều dọc cho cột Action */
+    .table td:last-child {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    /* Giữ Edit & Delete nằm ngang */
+        .table td:last-child a {
+            display: inline-block;
+            margin: 0 6px;
+     }
+    .pagination {
+        margin: 15px 0 0;
+        display: flex;
+    }
+
+    .pagination .active span {
+        background: #4f46e5;
+        color: #fff;
+        border-color: #4f46e5;
+    }
+
+    .pagination li a, .pagination li span {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 5px;
+        border: 1px solid #e5e7eb;
+        color: #4f46e5;
+        font-size: 14px;
+     }
+
+    .fa-check {
+        color: #16a34a;
+        font-size: 16px;
+    }
+
+</style>

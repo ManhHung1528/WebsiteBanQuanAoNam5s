@@ -1,0 +1,48 @@
+﻿@using Website.Models
+@{
+    var cart = Cart.GetCart(Context.Session);
+}
+@functions {
+    public MyDbContext db = new MyDbContext();
+}
+<div class="">
+    @if (cart != null && cart.Count > 0)
+    {
+        foreach (var item in cart)
+        {
+            <div class="mini-cart-item">
+                <img src="~/Upload/Products/@item.ProductRecord.Photo" />
+
+                <div class="mini-cart-info">
+                    <div class="name">@item.ProductRecord.Name</div>
+                    <div class="qty-price">
+                        @item.Quantity x
+                        @string.Format("{0:N0} ₫",
+                            item.ProductRecord.Price - item.ProductRecord.Discount)
+                    </div>
+                    <div class="variant">
+                        @(db.Size.FirstOrDefault(s => s.Id == item.SizeId)?.Name)  
+                        @(db.Color.FirstOrDefault(c => c.Id == item.ColorId)?.Name)
+                    </div>
+                </div>
+                <a href="/Cart/Remove/@item.ProductRecord.Id"><span class="ion-ios-close"></span></a>
+            </div>
+        }
+
+        <div class="mini-cart-total">
+            Tổng:
+            <strong>@string.Format("{0:N0} ₫", Cart.CartTotal(Context.Session)+(Context.Session.GetInt32("Shipper") ?? 0))</strong>
+        </div>
+
+        <div class="mini-cart-actions">
+            <a href="/Cart" class="btn btn-sm btn-outline-dark">Xem giỏ</a>
+            <a href="/Cart/Checkout" class="btn btn-sm btn-dark">Thanh toán</a>
+        </div>
+    }
+    else
+    {
+        <div class="mini-cart-empty">
+            Giỏ hàng trống
+        </div>
+    }
+</div>

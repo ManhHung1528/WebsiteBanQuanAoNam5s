@@ -1,0 +1,192 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/_Shared/_Layout.cshtml";
+}
+
+@using Website.Models
+@model Products
+
+@{
+    string Name = Model?.Name ?? "";
+    string Description = Model?.Description ?? "";
+    string Content = Model?.Content ?? "";
+    int Hot = Model?.Hot ?? 0;
+    string Photo = Model?.Photo ?? "";
+    double Price = Model?.Price ?? 0;
+    double Discount = Model?.Discount ?? 0;
+    int Id = Model?.Id ?? 0;
+}
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+
+    public List<RowCategory> GetCategories()
+    {
+        return db.Categories
+                 .Where(x => x.ParentId == 0)
+                 .OrderByDescending(x => x.Id)
+                 .ToList();
+    }
+
+    public List<RowCategory> GetSubCategories(int parentId)
+    {
+        return db.Categories
+                 .Where(x => x.ParentId == parentId)
+                 .OrderByDescending(x => x.Id)
+                 .ToList();
+    }
+
+    public bool IsChecked(int productId, int categoryId)
+    {
+        return db.categoriesProducts
+                 .Any(x => x.ProductId == productId && x.CategoryId == categoryId);
+    }
+}
+
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+
+<!-- jQuery + Select2 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .editor-fixed {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .editor-fixed-content {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <strong>@(Model == null ? "Add Product" : "Update Product")</strong>
+        </div>
+
+        <div class="panel-body">
+            <form method="post" enctype="multipart/form-data" action="@ViewBag.formAction">
+
+                <!-- NAME -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Name</label>
+                    <div class="col-md-10">
+                        <input type="text" name="Name" value="@Name" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- PRICE -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Price</label>
+                    <div class="col-md-10">
+                        <input type="number" name="Price" value="@Price" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- DISCOUNT -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Discount</label>
+                    <div class="col-md-10">
+                        <input type="number" name="Discount" value="@Discount" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- CATEGORIES -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Categories</label>
+                    <div class="col-md-10">
+                        <select name="Categories" id="Categories" class="form-control" multiple>
+                            @foreach (var cat in GetCategories())
+                            {
+                                <option value="@cat.Id" @(Model != null && IsChecked(Id, cat.Id) ? "selected" : "")>
+                                    @cat.Name
+                                </option>
+
+                                foreach (var sub in GetSubCategories(cat.Id))
+                                {
+                                    <option value="@sub.Id" @(Model != null && IsChecked(Id, sub.Id) ? "selected" : "")>
+                                        &nbsp;&nbsp;↳ @sub.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Description</label>
+                    <div class="col-md-10">
+                        <textarea name="Description" id="Description">@Description</textarea>
+                    </div>
+                </div>
+
+                <!-- CONTENT -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Content</label>
+                    <div class="col-md-10">
+                        <textarea name="Content" id="Content">@Content</textarea>
+                    </div>
+                </div>
+
+                <!-- HOT -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <label>
+                            <input type="checkbox" name="Hot" @(Hot == 1 ? "checked" : "") />
+                            <strong>Hot product</strong>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- IMAGE -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label">Image</label>
+                    <div class="col-md-10">
+                        @if (!string.IsNullOrEmpty(Photo))
+                        {
+                            <div style="margin-bottom:8px;">
+                                <img src="~/Upload/Products/@Photo"
+                                     style="width:120px; border:1px solid #ddd; padding:4px;" />
+                            </div>
+                        }
+                        <input type="file" name="img" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- SUBMIT -->
+                <div class="form-group row">
+                    <label class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Save
+                        </button>
+                        <a href="/Admin/Products" class="btn btn-default">Cancel</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#Categories").select2({
+        placeholder: "Select categories"
+    });
+
+    ClassicEditor.create(document.querySelector('#Description'))
+        .then(editor => {
+            editor.ui.view.editable.element.classList.add('editor-fixed');
+        });
+
+    ClassicEditor.create(document.querySelector('#Content'))
+        .then(editor => {
+            editor.ui.view.editable.element.classList.add('editor-fixed-content');
+        });
+</script>

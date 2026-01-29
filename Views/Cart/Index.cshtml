@@ -1,0 +1,244 @@
+﻿@{
+	Layout = "~/Views/_Shared/_LayoutTrangChu.cshtml";
+}
+
+@using Website.Models
+@* Khai báo kiểu dữ liệu cho Model *@
+@model List<Item> // Lên dùng để có gợi ý thuộc tính
+<!-- main -->
+@* Hay gặp lỗi đoạn này gọi Model bị Null lên cho điều kiện *@
+@functions {
+	public MyDbContext db = new MyDbContext();
+	public List<Products> GetProducts()
+	{
+		return db.Products.ToList();
+	}
+}
+<section class="ftco-section ftco-cart">
+	
+}
+
+	<div class="container">
+		<div class="row">
+			<form action="/Products/ProductBuy" method="post">
+				<div class="col-md-12 ftco-animate">
+				<div class="cart-list">
+					<table class="table">
+						<thead class="thead-primary">
+							<tr class="text-center">
+								<th>&nbsp;</th>
+								<th>Img</th>
+								<th>Product name</th>
+								<th>Price</th>
+								<th>Quantity</th>
+								<th>Discount</th>
+								<th>Size</th>
+								<th>Color</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+
+    <div class="card mb-4 p-3">
+        <h4>Thông tin giao hàng</h4>
+        <p><b>Họ tên:</b> @Context.Session.GetString("Ship_FullName")</p>
+        <p><b>SĐT:</b> @Context.Session.GetString("Ship_Phone")</p>
+        <p><b>Email:</b> @Context.Session.GetString("Ship_Email")</p>
+        <p><b>Địa chỉ:</b>
+            @Context.Session.GetString("Ship_Address"),
+            @Context.Session.GetString("Ship_Ward"),
+            @Context.Session.GetString("Ship_City")
+        </p>
+        <p><b>Ghi chú:</b> @Context.Session.GetString("Ship_Note")</p>
+        <p><b>Thanh toán:</b>
+            <span class="text-danger">
+                @Context.Session.GetString("Ship_Payment")
+            </span>
+        </p>
+    </div>
+								@if (Model != null && Model.Count > 0)
+								{
+									@foreach(var Product in Model)
+							{
+									
+										@if (Product.ProductRecord == null)
+										{
+											continue;
+										}
+										<tr class="text-center">
+
+											<td class="product-remove"><a href="/Cart/Remove/@Product.ProductRecord.Id"><span class="ion-ios-close"></span></a></td>
+
+											<td class="image-prod"><img src="~/Upload/Products/@Product.ProductRecord.Photo" class="img-fluid" alt="Colorlib Template"></td>
+
+											<td class="product-name">
+												<h3>@Product.ProductRecord.Name</h3>
+												@* <p>@Product.ProductRecord.Content</p> *@
+											</td>
+
+											<td class="price">@string.Format("{0:N0} ₫", (Product.ProductRecord.Price)*Product.Quantity)</td>
+
+											<td class="quantity">
+												<div class="input-group mb-3">
+													<input type="number" name="product_@Product.ProductRecord.Id" class="quantity form-control input-number" value="@Product.Quantity" min="1" max="100">
+												</div>
+											</td>
+
+											<td class="total">@string.Format("{0:N0} ₫",( Product.ProductRecord.Discount)*Product.Quantity)</td>
+											<td>@Product.SizeName</td>
+											<td>@Product.ColorName</td>
+										</tr>
+									
+
+							
+								<!-- END TR-->
+							}
+								} else
+								{
+										<p>Giỏ hàng trống</p>
+									}
+													
+						</tbody>
+							@if(Model.Count > 0)
+							{
+								<tfoot>
+							<tr>
+							<td colspan="12">
+								<div class="d-flex gap-2 align-items-stretch">
+									<a href="/Cart/Destroy"
+									   class="btn btn-primary flex-fill d-flex align-items-center justify-content-center">
+										Xoá toàn bộ
+									</a>
+									<button type="submit" formaction="/Cart/Update" class="btn btn-success">Cập nhật</button>
+									
+
+									<a href="/Home"
+									   class="btn btn-danger flex-fill d-flex align-items-center justify-content-center">
+										Tiếp tục mua hàng
+									</a>
+								</div>
+							</td>
+						</tr>
+						</tfoot>
+							}
+							
+					</table>
+						@if(Model !=null && Model.Count > 0)
+						{
+							<div class="cartPay">
+							<div class="cart-total">
+									@* @foreach(var product in Model)
+									{
+										@if(product.ProductRecord != null)
+										{
+											<p>Tạm tính: @string.Format("{0:N0} ₫", (product.ProductRecord.Price)*product.Quantity)</p>
+											<p>Giảm trực tiếp: -@string.Format("{0:N0}₫", (product.ProductRecord.Discount)*product.Quantity )</p>
+										}
+										 else
+										{
+											<p> Product Redcord bị null</p>
+										}
+										
+									} *@
+						
+									
+									
+							 @* <p>Phí ship: +@string.Format("{0:N0}₫",Context.Session.GetInt32("Shipper") ?? 0)</p> *@
+								<p><b>Tổng cộng: @string.Format("{0:N0}₫",(Cart.CartTotal(Context.Session) + (Context.Session.GetInt32("Shipper") ?? 0)))</b></p>
+							</div>
+							<a href="/Cart/Checkout" class="btn-checkout">Thanh toán</a>
+							</div>
+
+						} else
+						{
+							<p>Giỏ hàng trống</p>
+						}
+						<div>
+							
+						</div>
+
+				</div>
+			</div>
+			</form>
+			
+		</div>
+	</div>
+</section>
+
+<style>
+
+	.cartPay {
+    width: 100%;               /* 🔥 BẮT BUỘC */
+    display: flex;
+    flex-direction: column;    /* tổng tiền trên – nút dưới */
+    align-items: flex-end;     /* căn phải */
+    gap: 12px;
+    margin-top: 20px;
+	}
+
+	.cart-total {
+		text-align: right;
+		border: none !important;
+		text-transform: uppercase;
+		color: black;
+	}
+
+	/* Nút thanh toán */
+	.btn-checkout {
+    width: 220px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    border-radius: 8px;
+    text-decoration: none;
+	margin-right: 18px;
+	}
+	img.img-fluid {
+		width: 100%;
+		height: 200;
+		height: 250px;
+	}
+	td.price {
+		width: 100px;
+	}
+	td.total {
+    width: 100px;
+	}
+	section.ftco-section{
+		width: 100%;
+	}
+	img {
+    vertical-align: middle;
+    border-style: none;
+    width: 100%;
+	}
+	button.btn.btn-success {
+    width: 300px;
+	}
+	.table .thead-primary {
+    background: #bf272d;
+	}
+	a.btn.btn-danger.flex-fill.d-flex.align-items-center.justify-content-center {
+    background: #bf272d;
+	
+	}
+	.heading-section .subheading {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 10px;
+    font-family: "Lora", Georgia, serif;
+    font-style: italic;
+    color: #bf272d;
+	}
+</style>
+
+
+

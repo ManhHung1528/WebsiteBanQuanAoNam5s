@@ -1,0 +1,84 @@
+﻿/* ===== AUTH PAGE ONLY ===== */
+.template-customer {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 15px;
+}
+
+    /* TEXT */
+    .template-customer h1 {
+        text-align: center;
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .template-customer > p {
+        text-align: center;
+        color: #666;
+        margin-bottom: 40px;
+    }
+
+    /* FORM BOX */
+    .template-customer .wrapper-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    /* TITLE */
+    .template-customer .title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #e74c3c;
+        padding-bottom: 8px;
+    }
+
+    /* FORM GROUP */
+    .template-customer .form-group {
+        margin-bottom: 18px;
+    }
+
+    .template-customer label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    /* INPUT */
+    .template-customer .input-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+        .template-customer .input-control:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+
+    /* BUTTON */
+    .template-customer .button {
+        display: inline-block;
+        background: #e74c3c;
+        color: #fff;
+        padding: 10px 26px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .template-customer .button:hover {
+            background: #c0392b;
+        }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .template-customer .wrapper-form {
+        margin-bottom: 30px;
+    }
+}

@@ -1,0 +1,218 @@
+﻿/* =========================
+   RESET & GLOBAL
+========================= */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+/* =========================
+   SECTION TITLE
+========================= */
+.special-collection h2,
+.home-blog h2 {
+    font-size: 22px;
+    text-transform: uppercase;
+    border-left: 5px solid red;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+/* =========================
+   PRODUCT GRID
+========================= */
+.product-grid {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+    .product-grid:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,.15);
+        transform: translateY(-3px);
+    }
+
+    /* IMAGE */
+    .product-grid .image {
+        height: 180px;
+        overflow: hidden;
+        text-align: center;
+    }
+
+        .product-grid .image img {
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .product-grid:hover .image img {
+        transform: scale(1.05);
+    }
+
+    /* INFO */
+    .product-grid .info {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .product-grid .name {
+        font-size: 14px;
+        font-weight: 600;
+        height: 38px;
+        overflow: hidden;
+    }
+
+        .product-grid .name a {
+            color: #333;
+        }
+
+            .product-grid .name a:hover {
+                color: red;
+            }
+
+/* PRICE */
+.price-box {
+    margin: 4px 0;
+}
+
+    .price-box .price {
+        font-weight: bold;
+        color: red;
+    }
+
+        .price-box .price.product-price[style*="line-through"] {
+            color: #999;
+            font-size: 13px;
+        }
+
+    /* RATING */
+    .price-box img {
+        width: 16px;
+        margin: 0 1px;
+    }
+
+/* BUTTON */
+.action-btn {
+    margin-top: 8px;
+}
+
+    .action-btn .button {
+        display: inline-block;
+        padding: 6px 14px;
+        background: red;
+        color: #fff;
+        border-radius: 3px;
+        font-size: 13px;
+        transition: 0.3s;
+    }
+
+        .action-btn .button:hover {
+            background: #c40000;
+        }
+
+/* =========================
+   HOT PRODUCT
+========================= */
+.special-collection {
+    background: #fff;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+/* =========================
+   CATEGORY BLOCK
+========================= */
+.tabs-container {
+    border-bottom: 2px solid red;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   NEWS
+========================= */
+.home-blog {
+    background: #fff;
+    padding: 15px;
+}
+
+    .home-blog .article {
+        background: #fafafa;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+        .home-blog .article:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,.1);
+        }
+
+        .home-blog .article img {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .home-blog .article .info {
+            padding: 10px;
+        }
+
+    .home-blog h3 {
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+        .home-blog h3 a {
+            color: #333;
+        }
+
+            .home-blog h3 a:hover {
+                color: red;
+            }
+
+    .home-blog .desc {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.5;
+        max-height: 60px;
+        overflow: hidden;
+    }
+
+/* =========================
+   ADV IMAGE
+========================= */
+.widebanner img,
+.img-thumbnail {
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+    .widebanner img:hover,
+    .img-thumbnail:hover {
+        transform: scale(1.02);
+    }
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    .product-grid .image {
+        height: 140px;
+    }
+
+    .product-grid {
+        height: auto !important;
+    }
+}
+div#content-taba4 {
+    display: flex;
+}

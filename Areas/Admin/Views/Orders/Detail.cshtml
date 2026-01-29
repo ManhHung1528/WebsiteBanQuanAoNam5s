@@ -1,0 +1,191 @@
+﻿@{
+    //load file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/_Shared/_Layout.cshtml";
+}
+@using Website.Models
+@using System.IO
+@functions {
+    public MyDbContext db = new MyDbContext();
+    public Customers GetCustomers(int _CustomerId)
+    {
+        //lay mot ban ghi
+        Customers record = db.Customers.Where(item => item.Id == _CustomerId).FirstOrDefault();
+        return record != null ? record : new Customers();
+    }
+    public Order GetOrders(int _OrderId)
+    {
+        //lay mot ban ghi
+        Order record = db.Order.Where(item => item.Id == _OrderId).FirstOrDefault();
+        return record != null ? record : new Order();
+    }
+    public Products GetProducts(int _ProductId)
+    {
+        //lay mot ban ghi
+        Products record = db.Products.Where(item => item.Id == _ProductId).FirstOrDefault();
+        return record != null ? record : new Products();
+    }
+}
+<div class="col-md-12">
+    @{
+        Order recordOrders = GetOrders(ViewBag.OrderId);
+    }
+    <div style="margin-bottom:10px;">
+        <a href="/Admin/Orders" class="btn btn-danger">Quay lại</a>&nbsp;&nbsp;
+        @if (recordOrders.Status == 0)
+        {
+            <a href="/Admin/Orders/Delivery/@ViewBag.OrderId" class="btn btn-primary">Giao hàng</a>
+        }
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">Order detail</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th  style="width:50px;">Photo</th>
+                    <th style ="width:100px;">Name</th>
+                    <th style="width:50px;">DiaChiGiaoHang</th>
+                    <th style="width:00px;">Price</th>
+                    <th style="width:100px;">Quantity</th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    Products recordProducts = GetProducts(item.ProductId);
+                    <tr>
+                        <td>
+                            @if (recordProducts.Photo != null && File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\Upload\\Products\\" + recordProducts.Photo))
+                            {
+                                <img src="~/Upload/Products/@recordProducts.Photo" style="width:100px;" />
+                            }
+                        </td>
+                        <td>@recordProducts.Name</td>
+                        <td>
+                            <p><b>Họ tên:</b> @Context.Session.GetString("Ship_FullName")</p> <p><b>SĐT:</b> @Context.Session.GetString("Ship_Phone")</p> <p><b>Email:</b> @Context.Session.GetString("Ship_Email")</p> <p><b>Địa chỉ:</b> @Context.Session.GetString("Ship_Address"), @Context.Session.GetString("Ship_Ward"), @Context.Session.GetString("Ship_City") </p> <p><b>Ghi chú:</b> @Context.Session.GetString("Ship_Note")</p> <p><b>Thanh toán:</b> @Context.Session.GetString("Ship_Payment")</p> 
+
+
+
+                        </td>
+                        <td>@string.Format("{0:N0}đ", recordProducts.Price - recordProducts.Discount)</td>
+                        <td style="text-align:center;">@item.Quantity</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<style>
+    /* ===== PANEL ===== */
+    .panel-primary {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .panel-heading {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: #fff;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 14px 18px;
+        border-radius: 8px 8px 0 0;
+        letter-spacing: 0.5px;
+    }
+
+    .panel-body {
+        padding: 20px;
+    }
+
+    /* ===== TABLE ===== */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+        .table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 2px solid #dee2e6;
+            padding: 10px;
+        }
+
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f5ff;
+        transition: 0.2s;
+    }
+
+    /* ===== PRODUCT PHOTO ===== */
+    .table td img {
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /* ===== SHIPPING INFO ===== */
+    .table td p {
+        margin: 4px 0;
+        font-size: 13px;
+        text-align: left;
+    }
+
+    .table td b {
+        color: #007bff;
+    }
+
+    /* ===== PRICE ===== */
+    .table td:nth-child(4) {
+        font-weight: 600;
+        color: #e74c3c;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        color: #fff;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    /* Căn giữa nội dung cột địa chỉ */
+    .table td.shipping-info {
+        text-align: center; /* căn giữa theo chiều ngang */
+        vertical-align: middle; /* căn giữa theo chiều dọc */
+    }
+
+        .table td.shipping-info p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+
+</style>

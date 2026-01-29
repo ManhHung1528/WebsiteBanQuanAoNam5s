@@ -1,0 +1,363 @@
+﻿
+@model Website.Models.Products
+
+@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+@functions {
+    public MyDbContext db = new MyDbContext();
+    public string GetStar(int _ProductId, int _Star)
+    {
+        List<Rating> records = db.Ratings.Where(item => item.ProductId == _ProductId && item.Star == _Star).ToList();
+        return records.Count().ToString();
+    }
+
+}
+@using Website.Models
+@* @if (ViewBag.Message != null)
+{
+<div class="alert alert-success">
+    @ViewBag.Message
+</div>
+} *@
+
+
+
+@* <form method="post" action="/Cart/Buy"> *@
+    <div class="container checkout-page">
+        <input type="hidden" name="ProductId" value="@Model.Id" />
+        <div class="row g-4">
+
+            <!-- Cột chọn phương thức thanh toán -->
+
+            <div class="col-12 col-md-8">
+                <div>
+                    <h3>Đặt hàng thành công</h3>
+                    <p><b>Họ tên:</b> @Context.Session.GetString("Ship_FullName")</p> <p><b>SĐT:</b> @Context.Session.GetString("Ship_Phone")</p> <p><b>Email:</b> @Context.Session.GetString("Ship_Email")</p> <p><b>Địa chỉ:</b> @Context.Session.GetString("Ship_Address"), @Context.Session.GetString("Ship_Ward"), @Context.Session.GetString("Ship_City") </p> <p><b>Ghi chú:</b> @Context.Session.GetString("Ship_Note")</p> <p><b>Thanh toán:</b> @Context.Session.GetString("Ship_Payment")</p> <hr />
+
+                    <div class="ThongTinTk">
+                           <p><b>Tên chủ tài khoản: Nguyễn Mạnh Hùng</b></p>
+                           <p><b>Số tài khoản:</b>109876395116 tại ngân hàng VietTinBank</p>
+                           <p><b>Nội dung:</b>Thanh toán đơn hàng</p>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- Cột giỏ hàng -->
+            <div class="col-12 col-md-4">
+                <h3>Giỏ hàng</h3>
+                <div class="order-summary">
+
+                    <!-- SẢN PHẨM -->
+                    <div class="product-mini">
+                        <img src="~/Upload/Products/@Model.Photo" alt="@Model.Name" />
+                        <div class="info">
+                            <h5>@Model.Name</h5>
+                            <div class="variant">Size:
+                                @ViewBag.SizeName
+
+                            @ViewBag.ColorName
+
+                                </div>
+
+                            <div class="price">
+                                <del>@string.Format("{0:N0}đ", Model.Price)</del>
+                                <span>@string.Format("{0:N0}đ", Model.Price - Model.Discount)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TỔNG TIỀN -->
+                    <div class="summary-box">
+                        <div class="line">
+                            <span>Tạm tính</span>
+                            <span>@string.Format("{0:N0}đ", Model.Price)</span>
+                        </div>
+
+                        <div class="line">
+                            <span>Giảm giá trực tiếp</span>
+                            <span>-@string.Format("{0:N0}đ", Model.Discount)</span>
+                        </div>
+
+                        @* <div class="line">
+                            <span>Phí giao hàng</span>
+                        +@string.Format("{0:N0}₫", Context.Session.GetInt32("Shipper") ?? 0)
+                        </div> *@
+
+                        <hr />
+
+                        <div class="line total">
+                            <span>Tổng</span>
+                            <span class="total-price" id="tongTien">
+                            @string.Format("{0:N0}đ", Model.Price - Model.Discount+ Context.Session.GetInt32("Shipper") ?? 0)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- NÚT -->
+                    <div class="Home">
+                        <a href="/Home" class="btn-pay">
+                            Tiếp tục mua hàng
+                        </a>
+                    </div>
+
+
+
+                    @*  <form method="post" action="/Products/Tk"> 
+            <input type="hidden" name="ProductId" value="@Model.Id" />
+            <input type="hidden" name="Payment" value="COD" />
+
+            <button type="submit" class="btn-pay">
+                Thanh toán (COD)
+            </button>
+        </form>  *@
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @* </form> *@
+
+
+
+
+<style>
+    img {
+        width: 400px;
+    }
+    /* ===== RESET INPUT ===== */
+    input[type="text"], input[type="email"] {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+        }
+
+    /* ===== LEFT FORM CARD ===== */
+    .col-12.col-md-6:first-child {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* ===== PAYMENT SECTION ===== */
+    .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .card:hover {
+            border-color: #4f46e5;
+            background: #f9fafb;
+        }
+
+        .card input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+        }
+
+    /* ===== PAYMENT TITLE ===== */
+    h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    /* ===== BUTTON ===== */
+    button.btn-success {
+        background: #4f46e5;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: 0.25s;
+    }
+
+        button.btn-success:hover {
+            background: #4338ca;
+        }
+
+    /* ===== PRODUCT CONFIRM ===== */
+    .container.mt-5 {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    }
+
+        .container.mt-5 img {
+            width: 260px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .container.mt-5 h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .container.mt-5 p {
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* ===== CONFIRM BUTTON ===== */
+        .container.mt-5 a.btn-success {
+            background: #16a34a;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-size: 15px;
+        }
+
+            .container.mt-5 a.btn-success:hover {
+                background: #15803d;
+            }
+
+    /* ===== MOBILE ===== */
+    @@media (max-width: 768px) {
+        .container.mt-5 img {
+            width: 100%;
+        }
+    }
+
+    .order-summary {
+        background: #fff;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    /* PRODUCT */
+    .product-mini {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+        .product-mini img {
+            width: 80px;
+            border-radius: 10px;
+        }
+
+        .product-mini h5 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+    .variant {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .price del {
+        font-size: 13px;
+        color: #999;
+        margin-right: 6px;
+    }
+
+    .price span {
+        color: #dc2626;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    /* SUMMARY BOX */
+    .summary-box {
+        border: 1.5px solid #dc2626;
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+        .summary-box .line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .summary-box hr {
+            margin: 8px 0;
+        }
+
+        /* TOTAL */
+        .summary-box .total {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+    .total-price {
+        color: #dc2626;
+    }
+
+    /* BUTTON */
+    .btn-pay {
+        margin-top: 12px;
+        background: #b91c1c;
+        color: #fff;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .ThanhToan {
+        display: flex;
+        justify-content: center;
+    }
+    /* // css Search */
+    button.btn.btn-sm.btn-outline-secondary {
+        width: 30px;
+        height: 46.8px;
+        margin-left: 5px;
+        border-radius: 70px;
+    }
+
+    .navbar-nav .nav-item {
+        margin-left: 10px;
+        display: flex;
+    }
+
+    select#PhiGiaoHang {
+        border-radius: 20px;
+    }
+
+    .Home {
+        margin: 55px;
+        margin-bottom: 0px;
+        margin-top: 20px;
+    }
+</style>
+<script>
+    const selectShip = document.getElementById("PhiGiaoHang");
+    const phiShipSpan = document.getElementById("phiShip");
+    const tongTienSpan = document.getElementById("tongTien");
+    const basePrice = @Model.Price - @Model.Discount; // giá sau giảm
+
+    // Khi thay đổi option
+    selectShip.addEventListener("change", function () {
+        const shipFee = parseInt(this.value);
+        // cập nhật phí ship
+        phiShipSpan.textContent = "+" + shipFee.toLocaleString("vi-VN") + "đ";
+        // cập nhật tổng cộng
+        tongTienSpan.textContent = (basePrice + shipFee).toLocaleString("vi-VN") + "đ";
+    });
+</script>

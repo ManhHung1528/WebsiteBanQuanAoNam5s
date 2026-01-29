@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Products>
+
+@functions {
+    // Lấy bên ProductCategory
+    public MyDbContext db = new MyDbContext();
+    // Ở dưới bỏ đi
+}
+<div class="special-collection">
+    <div class="tabs-container">
+        <div class="row" style="margin-top:10px;">
+            <div class="head-tabs head-tab1 col-lg-12">
+                <h2>
+                    Tìm kiếm theo giá, Giá từ @string.Format("{0:N0} ₫", ViewBag.fromPrice) đến @string.Format("{0:N0} ₫", ViewBag.toPrice)
+                </h2>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Tìm theo mức giá</div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            Giá từ
+                            <input type="number" id="fromPrice" class="form-control" />
+                        </li>
+                        <li class="list-group-item">
+                            Đến
+                            <input type="number" id="toPrice" class="form-control" />
+                        </li>
+                        <li class="list-group-item text-center">
+                            <input type="button" class="btn btn-warning w-100"
+                                   value="Tìm mức giá"
+                                   onclick="location.href='/Search/SearchPrice?fromPrice='+fromPrice.value+'&toPrice='+toPrice.value;" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tabs-content row">
+                <div id="content-tabb1" class="content-tab content-tab-proindex" style="">
+                    <div class="clearfix">
+
+                        <div class="row">
+
+                            @foreach (var row in Model)
+                            {
+                                <div class="col-6 col-md-3 mb-4">
+                                    <div class="card h-100">
+                                        <a href="/Products/Detail/@row.Id">
+                                            <img src="~/Upload/Products/@row.Photo"
+                                                 class="card-img-top"
+                                                 style="height:200px; object-fit:cover;" />
+                                        </a>
+
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title" style="height:40px; overflow:hidden;">
+                                                @row.Name
+                                            </h6>
+
+                                            <p class="text-muted mb-1">
+                                                <del>@string.Format("{0:N0} ₫", row.Price)</del>
+                                            </p>
+
+                                            <p class="font-weight-bold text-danger">
+                                                @string.Format("{0:N0} ₫", row.Price - row.Discount)
+                                            </p>
+
+                                            <a href="/Cart/Buy/@row.Id"
+                                               class="btn btn-warning btn-sm btn-block">
+                                                🛒 Add to Cart
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- paging -->
+                        <div style="clear: both;"></div>
+                        <div class="&#x70;&#x61;&#x67;&#x69;&#x6E;&#x61;&#x74;&#x69;&#x6F;&#x6E;&#x2D;&#x63;&#x6F;&#x6E;&#x74;&#x61;&#x69;&#x6E;&#x65;&#x72;">
+                            @Html.PagedListPager(
+                            Model,
+                            page => Url.Action("SearchPrice", new { page = page, fromPrice = ViewBag.fromPrice, toPrice = ViewBag.toPrice }))
+                        </div>
+                        <!-- end paging -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+</div>
+<style>
+    .hieght {
+        height: 400px;
+    }
+    img.img-responsive {
+        height: 200px;
+    }
+    .product-grid {
+        height:100%;
+    }
+
+     .pagination {
+        margin: 15px 0 0;
+        display: flex;
+     }
+
+     .pagination .active span {
+        background: #4f46e5;
+        color: #fff;
+        border-color: #4f46e5;
+     }
+
+     .pagination li a, .pagination li span
+     {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 5px;
+        border: 1px solid #e5e7eb;
+        color: #4f46e5;
+        font-size: 14px;
+     }
+
+     .pagination {
+        margin: 20px 0;
+     }
+
+     a.btn.btn-warning.btn-sm.btn-block {
+        background: #bf272d;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 40px;
+     }
+</style>

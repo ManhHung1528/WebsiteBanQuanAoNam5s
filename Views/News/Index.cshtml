@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<News>
+<!-- main -->
+<h1>Tin tức</h1>
+<div class="wrapper-blog" style="margin-top:-20px;">
+    <div class="row">
+        @foreach (var row in Model)
+        {
+            <!-- list news -->
+            <div class="col-md-6 article">
+                <a href="/News/Detail/@row.Id" class="image"> <img src="~/Upload/News/@row.Photo" alt="@row.Name" title="@row.Name" class="img-responsive"> </a>
+                <h5><a href="/News/Detail/@row.Id" style="font-weight:bold;">@row.Name</a></h5>
+                <p class="desc">@Html.Raw(row.Description)</p>
+            </div>
+            <!-- end list news -->
+        }
+    </div>
+    @Html.PagedListPager(
+    Model,
+    page => Url.Action("Index", new { page = page })
+        )
+</div>
+
+<!-- end main -->
+<style>
+    img.img-responsive {
+        width: 100%;
+        height: 300px;
+    }
+
+    .pagination {
+        margin: 15px 0 0;
+        display: flex;
+    }
+
+    .pagination .active span {
+        background: #4f46e5;
+        color: #fff;
+        border-color: #4f46e5;
+     }
+
+     .pagination li a, .pagination li span {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 5px;
+        border: 1px solid #e5e7eb;
+        color: #4f46e5;
+        font-size: 14px;
+      }
+
+    .pagination {
+        margin: 20px 0;
+    }
+
+</style>

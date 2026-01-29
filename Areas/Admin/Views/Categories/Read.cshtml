@@ -1,0 +1,264 @@
+﻿@{
+    //set template
+    Layout = "~/Areas/Admin/Views/_Shared/_Layout.cshtml";
+}
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@* Định nghĩa kiểu dữ liệu cho model *@
+@model X.PagedList.IPagedList<RowCategory>
+@functions {
+    public MyDbContext db = new MyDbContext();
+    public List<RowCategory> GetSubCategories(int CategoryId)
+    {
+        //lấy các danh mục con tương ứng với Id của danh mục cha truyền vào
+        List<RowCategory> listCategories = db.Categories.Where(item => item.ParentId == CategoryId).ToList();
+        return listCategories != null ? listCategories : new List<RowCategory>();
+    }
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="col-md-12">
+    <div style="margin-bottom:5px;">
+        <a href="/Admin/Categories/Create" class="btn btn-primary">Add category</a>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">List category</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th style="width:380px;">Name</th>
+                    <th style="width:140px;">Display Home Page</th>
+                    <th style="width:100px;">Action</th>
+                </tr>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td>@row.Name</td>
+                        <td style="text-align:center;">
+                            @if (row.DisplayHomePage == 1)
+                            {
+                                <i class="fa fa-check"></i>
+                            }
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="/Admin/Categories/Update/@row.Id"><i class="fa-solid fa-pen-to-square"></i>Edit</a>&nbsp;
+                            <a href="/Admin/Categories/Delete/@row.Id" onclick="return window.confirm('Bạn có chắc chắn muốn xoá User?');"> <i class="fa-solid fa-trash-can"></i>Delete</a>
+                        </td>
+                    </tr>
+                    List<RowCategory> listSubCategories = GetSubCategories(row.Id);
+                    foreach (RowCategory rowSub in listSubCategories)
+                    {
+                        <tr>
+                            <td style="padding-left:50px;">@rowSub.Name</td>
+                            <td style="text-align:center;">
+                                @if (rowSub.DisplayHomePage == 1)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+                            <td style="text-align:center;">
+                                <a href="/Admin/Categories/Update/@rowSub.Id"><i class="fa-solid fa-pen-to-square"></i>Edit</a>&nbsp;
+                                <a href="/Admin/Categories/Delete/@rowSub.Id" onclick="return window.confirm('Bạn có chắc chắn muốn xoá User?');"> <i class="fa-solid fa-trash-can"></i>Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+            <style type="text/css">
+                .pagination {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            </style>
+            @Html.PagedListPager(Model, page => Url.Action("Read", new { page = page, a = 1, b = 2 }))
+        </div>
+    </div>
+</div>
+<style>
+    /* ===============================
+       RESET PANEL CŨ → CARD HIỆN ĐẠI
+    ================================ */
+    .panel {
+        border: none !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .panel-heading {
+        background: none !important;
+        color: #1f2937 !important;
+        font-size: 22px;
+        font-weight: 600;
+        padding: 0 0 15px 0;
+        border: none;
+    }
+
+    .panel-body {
+        padding: 0;
+    }
+
+    /* ===============================
+       ADD BUTTON (GIỐNG USER)
+    ================================ */
+    .col-md-12 > div:first-child a {
+        background: #4f46e5;
+        color: #fff !important;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .col-md-12 > div:first-child a:hover {
+            background: #4338ca;
+        }
+
+    /* ===============================
+       TABLE CARD
+    ================================ */
+    .table {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+        /* ===============================
+       TABLE HEADER
+    ================================ */
+        .table th {
+            background: #f1f3f9 !important;
+            color: #374151;
+            font-weight: 600;
+            padding: 10px !important;
+            border-bottom: 2px solid #e5e7eb !important;
+            text-align: center;
+        }
+
+        /* ===============================
+       TABLE BODY
+    ================================ */
+        .table td {
+            padding: 10px !important;
+            border-bottom: 1px solid #eee !important;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tr:hover {
+            background: #f9fafb;
+            transition: 0.2s;
+        }
+
+        /* CỘT NAME CANH TRÁI */
+        .table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        /* ===============================
+       SUB CATEGORY (KHÔNG ĐỔI HTML)
+    ================================ */
+        .table td[style*="padding-left"] {
+            padding-left: 40px !important;
+            color: #4b5563;
+            position: relative;
+        }
+
+            .table td[style*="padding-left"]::before {
+                content: "—";
+                position: absolute;
+                left: 20px;
+                color: #9ca3af;
+            }
+
+    /* ===============================
+       ICON CHECK
+    ================================ */
+    .fa-check {
+        color: #16a34a;
+        font-size: 16px;
+    }
+
+    /* ===============================
+       ACTION LINKS
+    ================================ */
+    .table td a {
+        font-weight: 500;
+        text-decoration: none;
+        margin: 0 6px;
+    }
+
+        .table td a[href*="Update"] {
+            color: #2563eb;
+        }
+
+            .table td a[href*="Update"]:hover {
+                color: #1e40af;
+            }
+
+        .table td a[href*="Delete"] {
+            color: #dc2626;
+        }
+
+            .table td a[href*="Delete"]:hover {
+                color: #991b1b;
+            }
+
+    /* ===============================
+       PAGINATION (GIỐNG USER)
+    ================================ */
+    .pagination {
+        margin: 15px 0 0;
+        display: flex;
+        
+    }
+
+        .pagination li a,
+        .pagination li span {
+            padding: 6px 12px;
+            margin: 0 3px;
+            border-radius: 5px;
+            border: 1px solid #e5e7eb;
+            color: #4f46e5;
+            font-size: 14px;
+        }
+
+        .pagination .active span {
+            background: #4f46e5;
+            color: #fff;
+            border-color: #4f46e5;
+        }
+
+        .pagination li a:hover {
+            background: #eef2ff;
+        }
+
+    .table td a[href*="Update"] {
+        color: #2563eb;
+    }
+
+        .table td a[href*="Update"]:hover {
+            color: #1e40af;
+        }
+
+    .table td a[href*="Delete"] {
+        color: #dc2626;
+    }
+
+        .table td a[href*="Delete"]:hover {
+            color: #991b1b;
+        }
+    /* Edit & Delete nằm ngang hàng */
+    .table td:last-child {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+</style>

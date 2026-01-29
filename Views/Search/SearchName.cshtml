@@ -1,0 +1,117 @@
+﻿
+@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Products>
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tìm theo mức giá</div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        Giá từ
+                        <input type="number" id="fromPrice" class="form-control" />
+                    </li>
+                    <li class="list-group-item">
+                        Đến
+                        <input type="number" id="toPrice" class="form-control" />
+                    </li>
+                    <li class="list-group-item text-center">
+                        <input type="button" class="btn btn-warning w-100"
+                               value="Tìm mức giá"
+                               onclick="location.href='/Search/SearchPrice?fromPrice='+fromPrice.value+'&toPrice='+toPrice.value;" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            @foreach (var row in Model)
+            {
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+
+                        <a href="/Products/Detail/@row.Id">
+                            <img src="~/Upload/Products/@row.Photo"
+                                 class="card-img-top"
+                                 style="height:200px;object-fit:cover"
+                                 alt="@row.Name">
+                        </a>
+
+                        <div class="card-body text-center d-flex flex-column">
+
+                            <!-- NAME -->
+                            <h6 class="mb-2"
+                                style="
+                            font-size:15px;
+                            line-height:1.3;
+                            height:38px;
+                            overflow:hidden;
+                        ">
+                                <a href="/Products/Detail/@row.Id"
+                                   class="text-dark text-decoration-none">
+                                    @row.Name
+                                </a>
+                            </h6>
+
+                            <!-- PRICE (2 GIÁ CÙNG DÒNG) -->
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <span class="text-muted text-decoration-line-through SearchPrice" >
+                                    @string.Format("{0:N0} ₫", row.Price)
+                                </span>
+                                <span class="fw-bold text-success">
+                                    @string.Format("{0:N0} ₫", row.Price - row.Discount)
+                                </span>
+                            </div>
+
+                            <!-- ADD TO CART -->
+                            <a href="/Cart/Buy/@row.Id"
+                               class="btn btn-danger btn-sm d-flex align-items-center justify-content-center mx-auto px-3 w-100"
+                               style="height:30px;">
+                                Add to Cart
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+
+
+        
+        
+
+    </div>
+    </div>
+<style>
+    img.img-responsive {
+        height: 200px;
+    }
+    @* .row {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    /* margin-right: 10px; */
+    margin-left: 1px;
+    } *@
+    a.text-dark.text-decoration-none {
+        font-size: 15px;
+    }
+
+    .SearchPrice {
+        text-decoration: line-through;
+    }
+</style>

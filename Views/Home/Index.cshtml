@@ -1,0 +1,386 @@
+﻿@using Website.Areas.Admin.Controllers
+@using Website.Models
+@using Website.Helper
+@{
+    Layout = "~/Views/_Shared/_LayoutTrangChu.cshtml";
+}
+<link rel="stylesheet" href="~/Frontend/assets/frontend/100/047/633/themes/517833/assets/Home.css">
+
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+    // Lấy 6 sản phẩm nổi bật
+    public List<Products> HotProducts()
+    {
+        List<Products> rows = db.Products.Where(item => item.Hot == 1).OrderByDescending(item => item.Id).Skip(0).Take(8).ToList();
+        return rows != null ? rows : new List<Products>();
+    }
+    //Lấy sản phẩm hiển thị ở trang chủ
+    public List<RowCategory> GetCategories()
+    {
+        List<RowCategory> rows = db.Categories.Where(item => item.DisplayHomePage == 1)
+        .OrderByDescending(item => item.Id).ToList();
+        return rows != null ? rows : new List<RowCategory>();
+    }
+    // public List<RowCategory> GetCategories()
+    // {
+    //     return db.Categories
+    //         .OrderByDescending(item => item.Id)
+    //         .ToList();
+    // }
+    // Lấy 6 sản phẩm tương ứng với danh mục
+    public List<Products> GetProducts(int categoryId)
+    {
+        return (
+        from p in db.Products
+        join cp in db.categoriesProducts
+            on p.Id equals cp.ProductId
+        where cp.CategoryId == categoryId
+        orderby p.Id descending
+        select p
+    ).Take(6).ToList();
+    }
+    //lấy 6 sản phẩm nổi bật Tin tức
+    public List<News> HotNews()
+    {
+        List<News> rows = db.News.Where(item => item.Hot == 1).OrderByDescending(item => item.Id).Skip(0).Take(4).ToList();
+        return rows != null ? rows : new List<News>();
+    }
+}
+<div class="container">
+    @{
+                List<Adv> itemsAdv = Advs.GetAdv(1);
+            }
+            @foreach (var adv1 in itemsAdv)
+            {
+                <div class="row">
+                    <div class="col-xs-12 col-md-12"> <img src="~/Upload/Adv/@adv1.Photo" class="img-thumbnail"> </div>
+                </div>
+            }
+    <div class="row">
+        @{
+            var hotProducts = HotProducts();
+        }
+        @foreach (var item in hotProducts)
+        {
+            <div class="col-md-6 col-lg-3 ftco-animate">
+                <div class="product">
+                    <a href="/Products/Detail/@item.Id" class="img-prod">
+                        <img class="img-fluid" src="~/Upload/Products/@item.Photo" alt="@item.Name">
+                        <span class="status">-@string.Format("{0:N0} đ",item.Discount )</span>
+
+                    </a>
+
+                    <div class="text py-3 pb-4 px-3 text-center">
+                        <h3>
+                           @item.Name
+                        </h3>
+
+                        <div class="d-flex justify-content-center">
+                            <div class="pricing">
+                                <p class="price">
+                                    <span class="mr-2 price-dc">
+                                        @string.Format("{0:N0} ₫", item.Price)
+                                    </span>
+                                    <span class="price-sale">
+                                        @string.Format("{0:N0} ₫", item.Price -  item.Discount)
+                                    </span>
+                                </p>
+                            </div>
+                            
+                        </div>
+                        <p class="price-box" style="justify-content:center">
+                            <a href="/Products/Rate/@item.Id?star=1"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                            <a href="/Products/Rate/@item.Id?star=2"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                            <a href="/Products/Rate/@item.Id?star=3"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                            <a href="/Products/Rate/@item.Id?star=4"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                            <a href="/Products/Rate/@item.Id?star=5"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                        </p>
+
+                            <div class="add-cart d-flex justify-content-center align-items-center">
+                                <a href="/Cart/Buy/@item.Id">
+                                    🛒 Add to Cart
+                                </a>
+                            </div>                                
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @{
+                List<Adv> itemsAdv2 = Advs.GetAdv(2);
+            }
+            @foreach (var adv2 in itemsAdv2)
+            {
+                <div class="row">
+                    <div class="col-xs-12 col-md-12"> <img src="~/Upload/Adv/@adv2.Photo" class="img-thumbnail"> </div>
+                </div>
+            }
+    <div class="row">
+               
+    </div>
+              
+             
+            <!-- /adv -->
+            @{
+                var categories = GetCategories();
+            }
+            @foreach (var rowCategory in categories)
+            {
+        <!-- category product -->
+        @* if (rowCategory.DisplayHomePage != 1)
+        {
+            continue; // bỏ qua category này
+        } else
+        {
+            <div class="special-collection">
+                <div class="tabs-container">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="head-tabs head-tab1 col-lg-11">
+                            <h2 style="font-weight:bold; color:red;">
+                                @rowCategory.Name
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } *@
+         
+        <div class="special-collection">
+            <div class="tabs-container">
+                <div class="row" style="margin-top:10px;">
+                    <div class="head-tabs head-tab1 col-lg-11">
+                        <h2 style="font-weight:bold; color:red;">
+                            @rowCategory.Name
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+                   
+            <div class="tabs-content row">
+                <div id="content-taba4" class="content-tab content-tab-proindex">
+                    @{
+                        var products = GetProducts(rowCategory.Id);
+                    }
+                    @foreach (var row in products)
+                    {
+                        <!-- box product -->
+                        <div class="col-xs-6 col-md-2 col-sm-6 ">
+                            <div class="product-grid" id="product-1168979" style="height: 350px; overflow: hidden;">
+                                <div class="image"> <a href="/Products/Detail/@row.Id"><img src="~/Upload/Products/@row.Photo" title="@row.Name." alt="row.Name" class="img-responsive"></a> </div>
+                                <div class="info">
+                                    <h3 class="name"><a href="/Products/Detail/@row.Id">@row.Name</a></h3>
+                                    <p class="price-box"> <span class="special-price"> <span class="price product-price" style="text-decoration:line-through;"> @string.Format("{0:N0} ₫", row.Price)</span> </span> </p>
+                                    <p class="price-box"> <span class="special-price"> <span class="price product-price"> @string.Format("{0:N0} ₫", row.Price -  row.Discount) </span> </span> </p>
+                                    <p class="price-box">
+                                        <a href="/Products/Rate/@row.Id?star=1"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                                        <a href="/Products/Rate/@row.Id?star=2"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                                        <a href="/Products/Rate/@row.Id?star=3"><img src="~/Frontend/assets/frontend/images/star.jpg"></a> <a href="/Products/Rate/@row.Id?star=4"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                                        <a href="/Products/Rate/@row.Id?star=5"><img src="~/Frontend/assets/frontend/images/star.jpg"></a>
+                                    </p>
+                                    <div class="action-btn">
+                                        
+                                            <a href="/Cart/Buy/@row.Id" class="button">🛒Add to Cart</a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end box product -->
+                    }
+
+                </div>
+            </div> 
+       
+                }
+        
+
+
+
+            @{
+                List<Adv> itemsAdv3 = Advs.GetAdv(3);
+            }
+            @foreach (var adv3 in itemsAdv3)
+            {
+                <div class="row">
+                    <div class="col-xs-12 col-md-12"> <img src="~/Upload/Adv/@adv3.Photo" class="img-thumbnail"> </div>
+                </div>
+            }
+              
+              <div class="tabs-content row">
+                  <h2 class="title" style="font-weight:bold; color:red;"> <span>Tin tức</span></h2>
+                    <div id="content-taba4" class="content-tab content-tab-proindex">
+                        @{
+                            var GetNews = HotNews();
+                        }
+                        @foreach (var itemNews in GetNews)
+                        {
+                            <!-- box product -->
+                            <div class="col-xs-3 col-sm-3 col-md-3 ">
+                                <div class="product-grid" id="product-1168979" style="height: 350px; overflow: hidden;">
+                                    <div class="image"> <a href="/Products/Detail/@itemNews.Id"><img src="~/Upload/News/@itemNews.Photo" title="@itemNews.Name." alt="@itemNews.Name" class="img-responsive"></a> </div>
+                                        <div class="info">
+                                            <h3 class="name"><a href="/Products/Detail/@itemNews.Id">@itemNews.Name</a></h3>
+                                         </div>
+                                    </div>
+                                </div>
+
+                            <!-- end box product -->
+                        }
+                    </div> 
+            
+              </div>
+
+
+<style>
+        .price-box {
+            display:flex;
+        }
+        /* ===== PRODUCT CARD ===== */
+        .product-grid {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: auto !important
+        }
+
+        .product-grid:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+        .product-grid .image {
+            height: 200px;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+
+        .product-grid .image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease;
+        }
+
+        .product-grid:hover img {
+            transform: scale(1.08);
+        }
+
+        .product-grid .info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-top: 10px;
+    }
+
+    .product-grid h3.name {
+        font-size: 14px;
+        line-height: 1.4;
+        height: 40px;
+        overflow: hidden;
+        margin-bottom: 6px;
+    }
+
+    .product-grid h3.name a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .product-grid h3.name a:hover {
+        color: #e74c3c;
+    }
+
+    /* ===== PRICE ===== */
+    .product-grid .price-box {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin: 3px 0;
+    }
+
+    .product-grid .price-box .price {
+        font-weight: bold;
+        font-size: 14px;
+        color: #e74c3c;
+    }
+
+    .product-grid .price-box .price[style*="line-through"] {
+        color: #999;
+        font-size: 13px;
+    }
+
+    /* ===== RATING ===== */
+    .product-grid .price-box img {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* ===== ACTION BUTTON ===== */
+    .product-grid .action-btn {
+        margin-top: auto;
+        text-align: center;
+    }
+
+    .product-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-grid .info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-grid .action-btn {
+        margin-top: 10px; /*  bỏ auto */
+    }
+    .add-cart a {
+    background: #bf272d;
+    border-radius: 8px;
+    height: 40px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    width: 160px;
+    line-height: 40px;
+    margin-top: 10px;
+    }
+    .product .img-prod span.status 
+    {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 2px 10px;
+    color: #fff;
+    font-weight: 300;
+    background: #ad0000;
+    font-size: 12px;
+    }
+    .product .text p.price span.price-sale 
+    {
+    color: #ad0000;
+    font-size: 18px;
+    font-weight: 700;
+    }
+    .action-btn .button {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #bf272d;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 13px;
+    transition: 0.3s;
+    }
+    .heading-section .subheading {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 10px;
+    font-family: "Lora", Georgia, serif;
+    font-style: italic;
+    color: #bf272d;
+    }
+</style>

@@ -1,0 +1,297 @@
+﻿@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+@using Website.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Products>
+
+@functions {
+    public MyDbContext db = new MyDbContext();
+
+    public RowCategory GetCategoryName(int CategoryId)
+    {
+        return (db.Categories.Where(item => item.Id == CategoryId).FirstOrDefault());
+    }
+    public List<Products> GetProducts()
+    {
+        return db.Products.ToList();
+    }
+}
+@* @if(GetProducts != null)
+{
+	<div class="row">
+		<div class="col-md-12 ftco-animate">
+			<div class="cart-list">
+				<table class="table">
+					<thead class="thead-primary">
+						<tr class="text-center">
+							<th>&nbsp;</th>
+							<th>Product List</th>
+							<th>&nbsp;</th>
+							<th>Price</th>
+							<th>Quantity</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							var listProducts = db.Products.ToList();
+						}
+							@foreach(var item in listProducts)
+					{
+						<tr class="text-center">
+							<td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+
+							<td class="image-prod"> <a href="/Products/Detail/@item.Id"><img src="~/Upload/Products/@item.Photo" title="@item.Name." alt="row.Name" class="img-responsive"></a></td>
+
+							<td class="product-name">
+								<h3>@item.Name</h3>
+								<p>@item.Content</p>
+							</td>
+
+							<td class="price">@item.Price</td>
+
+							<td class="quantity">
+								<div class="input-group mb-3">
+									<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+								</div>
+							</td>
+
+							<td class="total">@item.Price</td>
+						</tr>
+					
+						<!-- END TR-->
+					}
+					
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+} *@
+@{
+    // Lấy tham số order trên URL
+    string Sapxep = Context.Request.Query["sapxep"];
+    // Tạo biến giá giảm giá tăng tên giảm tên tăng
+    // Dùng để đánh dấu option nào đang được chọn
+    string priceAsc = "", priceDesc = "", nameAsc = "", nameDesc = "";
+    // Trong Class Order nếu chọn value có tên nào thì tên đó được chọn
+    switch (Sapxep)
+    {
+        // Gán value trong Option
+        case "priceAsc": priceAsc = "selected"; break;
+        case "priceDesc": priceDesc = "selected"; break;
+        case "nameAsc": nameAsc = "selected"; break;
+        case "nameDesc": nameDesc = "selected"; break;
+    }
+}
+
+
+<div class="row">
+    <div class="col-md-12 d-flex justify-content-end mb-4">
+        <select class="form-control sort-select"
+                onchange="location.href='/Products/Category/@ViewBag.CategoryId?sapxep='+this.value;">
+            <option value="0">Sắp xếp</option>
+            <option value="priceAsc">Giá tăng dần</option>
+            <option value="priceDesc">Giá giảm dần</option>
+            <option value="nameAsc">A - Z</option>
+            <option value="nameDesc">Z - A</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tìm theo mức giá</div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        Giá từ
+                        <input type="number" id="fromPrice" class="form-control" />
+                    </li>
+                    <li class="list-group-item">
+                        Đến
+                        <input type="number" id="toPrice" class="form-control" />
+                    </li>
+                    <li class="list-group-item text-center">
+                        <input type="button" class="btn btn-warning w-100"
+                               value="Tìm mức giá"
+                               onclick="location.href='/Search/SearchPrice?fromPrice='+fromPrice.value+'&toPrice='+toPrice.value;" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            @if (Model == null)
+            {
+                <text>Model hiện tại đang null không thể hiển thị dữ liệu</text>
+            }
+            else
+            {
+                @foreach (var row in Model)
+                {
+                    <div class="col-md-6 col-lg-3 ftco-animate fadeInUp ftco-animated">
+                        <div class="product">
+                            <a href="/Products/Detail/@row.Id"><img src="~/Upload/Products/@row.Photo" title="@row.Name." alt="row.Name" class="img-responsive"></a>
+
+                            <div class="text py-3 pb-4 px-3 text-center">
+                                <h3><a href="#">@row.Name</a></h3>
+                                <div class="d-flex">
+                                    <div class="pricing">
+                                        <p class="price"><span class="mr-2 price-dc">@string.Format("{0:N0}₫", row.Price)</span><span class="price-sale">@string.Format("{0:N0}₫", row.Price - row.Discount)</span></p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <a class="add_cart" href="/Cart/Buy/@row.Id">
+                                        🛒 Add to Cart
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            }
+
+        </div>
+        <div style="clear: both;"></div>
+        <div style="" class="&#x70;&#x61;&#x67;&#x69;&#x6E;&#x61;&#x74;&#x69;&#x6F;&#x6E;&#x2D;&#x63;&#x6F;&#x6E;&#x74;&#x61;&#x69;&#x6E;&#x65;&#x72;">
+
+            @Html.PagedListPager(
+            Model,
+            page => Url.Action("Category", new { page = page }))
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+    img.img-responsive {
+        height: 200px;
+        width: 100%;
+    }
+
+    h3 {
+    }
+    /* ===== TÊN SẢN PHẨM ===== */
+    .product h3 {
+        font-size: 15px;
+        line-height: 1.3;
+        height: 40px; /* 2 dòng */
+        overflow: hidden;
+    }
+
+        .product h3 a {
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* tối đa 2 dòng */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #333;
+        }
+
+    .product .text {
+        min-height: 140px;
+    }
+    /* ===== FIX GIÁ ===== */
+    .price {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+        .price span {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+    /* giá gốc */
+    .price-dc {
+        color: #999;
+        font-size: 14px;
+        text-decoration: line-through;
+    }
+
+    /* giá sale */
+    .price-sale {
+        color: #6cb33f;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    /* .row {
+                /* display: -webkit-box; */
+    /* display: -ms-flexbox;
+                display: flex;
+                -ms-flex-wrap: wrap; */
+    /* flex-wrap: wrap;
+                margin-right: -15px;
+                margin-left: -15px; */
+    /* width: 80%; */
+    /* justify-content: flex-end; */
+    /*     margin-left: auto;
+            } */
+
+    .add_cart {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background: #bf272d;
+        border-radius: 8px;
+        height: 40px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        width: 160px;
+        line-height: 40px;
+        margin-top: 10px;
+    }
+
+    .pagination {
+        margin: 15px 0 0;
+        display: flex;
+    }
+
+    .pagination .active span {
+        background: #4f46e5;
+        color: #fff;
+        border-color: #4f46e5;
+        border-color: #4f46e5;
+     }
+
+    .pagination li a, .pagination li span {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 5px;
+        border: 1px solid #e5e7eb;
+        color: #4f46e5;
+        font-size: 14px;
+    }
+
+    .pagination {
+        margin: 20px 0;
+    }
+
+    .sort-select {
+        width: 220px;
+        height: 42px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+</style>

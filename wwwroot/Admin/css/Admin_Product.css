@@ -1,0 +1,70 @@
+﻿
+
+
+/*        phân trang*/
+/* ================== PAGINATION ================== */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start; /* có thể đổi center / flex-end */
+}
+
+    /* UL mặc định của X.PagedList */
+    .pagination-wrapper ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 6px;
+    }
+
+    /* LI */
+    .pagination-wrapper li {
+        display: inline-block;
+    }
+
+        /* A + SPAN (page link) */
+        .pagination-wrapper li a,
+        .pagination-wrapper li span {
+            display: block;
+            min-width: 38px;
+            height: 38px;
+            line-height: 36px;
+            padding: 0 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            color: #4e73df;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+            /* Hover */
+            .pagination-wrapper li a:hover {
+                background-color: #f1f3f9;
+                border-color: #4e73df;
+            }
+
+        /* Trang hiện tại */
+        .pagination-wrapper li.active span {
+            background-color: #4e73df;
+            color: #fff;
+            border-color: #4e73df;
+            font-weight: 600;
+        }
+
+        /* Disabled (Prev / Next khi hết trang) */
+        .pagination-wrapper li.disabled span {
+            color: #bdbdbd;
+            background-color: #f9f9f9;
+            border-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+    /* Ẩn gạch chân */
+    .pagination-wrapper a {
+        text-decoration: none !important;
+    }

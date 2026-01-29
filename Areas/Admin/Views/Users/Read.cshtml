@@ -1,0 +1,88 @@
+﻿@using Website.Models
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Website.Models.Users>
+
+@{
+    Layout = "~/Areas/Admin/Views/_Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/Admin/css/Admin_ListUsers.css">
+
+<div class="user-page-container">
+    <div class="header-flex">
+        <h2>List User</h2>
+        <div class="AddUser">
+            <a href="/Admin/Users/Create" class="btn-add">
+                <i class="fa-solid fa-user-plus"></i> Add User
+            </a>
+        </div>
+       
+    </div>
+
+    <div class="table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fullname</th>
+                    <th>Email Address</th>
+                    <th style="width: 180px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td class="user-name">@(string.IsNullOrEmpty(row.Name) ? "N/A" : row.Name)</td>
+                        <td>@(string.IsNullOrEmpty(row.Email) ? "N/A" : row.Email)</td>
+                        <td>
+                            <div class="action-cell">
+                                <a href="/Admin/Users/Update/@row.Id" class="link-edit">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
+                                <a href="/Admin/Users/Delete/@row.Id" class="link-delete" onclick="return confirm('Xoá người dùng này?');">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @* PHẦN PHÂN TRANG: Viết tối giản nhất để không bao giờ lỗi *@
+
+            @Html.PagedListPager(Model, page => Url.Action("Read", new { page = page }))
+
+    </div>
+</div>
+<style>
+        .pagination {
+            margin: 15px 0 0;
+            display: flex;
+        }
+
+        .pagination .active span {
+            background: #4f46e5;
+            color: #fff;
+            border-color: #4f46e5;
+        }
+
+        .pagination li a, .pagination li span {
+            padding: 6px 12px;
+            margin: 0 3px;
+            border-radius: 5px;
+            border: 1px solid #e5e7eb;
+            color: #4f46e5;
+            font-size: 14px;
+        }
+
+        .pagination {
+            margin: 20px 0;
+        }
+
+        .link-edit {
+            color: #2563eb;
+        }
+</style>

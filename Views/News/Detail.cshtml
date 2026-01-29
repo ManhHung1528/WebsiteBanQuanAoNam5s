@@ -1,0 +1,11 @@
+﻿@{
+    Layout = "~/Views/_Shared/_LayoutTrangTrong.cshtml";
+}
+@using Website.Models
+
+<div class="middle" style="margin-top:20px;">
+    <h2>@Model.Name</h2>
+    <!-- chi tiet -->
+    @Html.Raw(Model.Description)
+    @Html.Raw(Model.Content)
+</div>
