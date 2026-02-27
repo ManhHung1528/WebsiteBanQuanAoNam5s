@@ -1,6 +1,6 @@
 # Website bán quần áo nam 
  ## Công nghệ sử dụng:
-   ASP.NET Core MVC, Entity Framework Core, LINQ, ADO.NET
+  - ASP.NET Core MVC, Entity Framework Core, LINQ, ADO.NET
   - HTML, CSS, Bootstrap, JavaScript, Razor View
   - SQL Server
  ## Cách chạy project:
