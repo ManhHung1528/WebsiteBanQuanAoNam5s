@@ -4,9 +4,9 @@
   - HTML, CSS, Bootstrap, JavaScript, Razor View
   - SQL Server
  ## Cách chạy project:
-  B1: Clone code về máy hoặc tải file zip
-  B2: Tạo Database lấy dữ liệu từ DbWebsite.sql trong Github
-  B3: Thay chuỗi kết nối appsettings.json trong Visual Studio
+  - B1: Clone code về máy hoặc tải file zip
+  - B2: Tạo Database lấy dữ liệu từ DbWebsite.sql trong Github
+  - B3: Thay chuỗi kết nối appsettings.json trong Visual Studio
  ## Tài khoản Admin:
   - Tk: Hung@example.com
   - Mk: 123
